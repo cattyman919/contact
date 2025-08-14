@@ -41,22 +41,22 @@ export class ContactsController {
     return this.contactsService.create(createContactDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  @Get(':uuid')
+  findOne(@Param('uuid', ParseUUIDPipe) id: string) {
     return this.contactsService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':uuid')
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('uuid', ParseUUIDPipe) id: string,
     @Body() updateContactDto: UpdateContactDto,
   ) {
     return this.contactsService.update(id, updateContactDto);
   }
 
-  @Delete(':id')
+  @Delete(':uuid')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  remove(@Param('uuid', ParseUUIDPipe) id: string) {
     return this.contactsService.remove(id);
   }
 }

@@ -1,4 +1,4 @@
-import {Exclude, Expose} from 'class-transformer'
+import { Exclude, Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -28,6 +28,7 @@ export class Contact {
     length: 16,
     transformer: new UuidTransformer(),
   })
+  @Expose({ groups: ['dev'] })
   id: string;
 
   @Column()
@@ -43,9 +44,11 @@ export class Contact {
   email: string;
 
   @CreateDateColumn({ name: 'created_at' })
+  @Expose({ groups: ['dev'] })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
+  @Expose({ groups: ['dev'] })
   updatedAt: Date;
 
   @BeforeInsert()

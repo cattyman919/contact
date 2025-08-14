@@ -32,10 +32,6 @@ export class ContactsService {
     return this.contactsRepository.find();
   }
 
-  findAll_dev(): Promise<Contact[]> {
-    return this.contactsRepository.find();
-  }
-
   async findOne(id: string): Promise<Contact> {
     const contact = await this.contactsRepository.findOneBy({ id });
     if (!contact) {

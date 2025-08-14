@@ -1,0 +1,15 @@
+meta {
+  name: Delete Contact by ID
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{DEV_URL}}/contacts/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

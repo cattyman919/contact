@@ -1,0 +1,15 @@
+meta {
+  name: Update Contact by ID
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{DEV_URL}}/contacts/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

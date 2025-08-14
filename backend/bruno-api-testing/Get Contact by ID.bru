@@ -1,0 +1,15 @@
+meta {
+  name: Get Contact by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{DEV_URL}}/contacts/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 05179209-bfc5-4bfb-b49d-c7f0dde6028d
+}

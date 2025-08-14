@@ -1,13 +1,34 @@
 import { Controller, Get } from '@nestjs/common';
-import {MemoryHealthIndicator} from '@nestjs/terminus'
+import {
+    HealthIndicatorStatus,
+  MemoryHealthIndicator,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
+
+interface HealthCheckResponse {
+  database: HealthIndicatorStatus;
+  memory: HealthIndicatorStatus;
+}
 
 @Controller('health')
 export class HealthController {
-  constructor(private memory: MemoryHealthIndicator) {}
+  constructor(
+    private memory: MemoryHealthIndicator,
+    private db: TypeOrmHealthIndicator,
+  ) {}
 
   @Get()
-  async check(): Promise<string> {
-    let memory = await this.memory.checkHeap('memory_heap', 150 * 1024 * 1024);
-    return memory.memory_heap.status === 'up' ? 'OK' : 'Memory usage is too high';
+  async check(): Promise<HealthCheckResponse> {
+
+    const memoryResult = await this.memory.checkHeap(
+      'memory_heap',
+      150 * 1024 * 1024,
+    );
+    const databaseResult = await this.db.pingCheck('database');
+
+    return {
+      memory: memoryResult.memory_heap.status,
+      database: databaseResult.database.status,
+    };
   }
 }

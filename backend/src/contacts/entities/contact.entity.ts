@@ -1,18 +1,27 @@
-import {Column, Entity, BeforeInsert, PrimaryColumn, ValueTransformer, CreateDateColumn, UpdateDateColumn} from 'typeorm'
-import {v4 as uuidv4} from 'uuid'
+import {
+  Column,
+  Entity,
+  BeforeInsert,
+  PrimaryColumn,
+  ValueTransformer,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 export class UuidTransformer implements ValueTransformer {
   to(value: string): Buffer {
     return Buffer.from(value.replace(/-/g, ''), 'hex');
   }
   from(value: Buffer): string {
-    return value.toString('hex').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5');
+    return value
+      .toString('hex')
+      .replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5');
   }
 }
 
 @Entity('contacts')
 export class Contact {
-
   @PrimaryColumn('binary', {
     length: 16,
     transformer: new UuidTransformer(),
@@ -21,7 +30,8 @@ export class Contact {
 
   @Column()
   name: string;
-    @Column({ unique: true })
+
+  @Column({ unique: true })
   phone: string;
 
   @Column({ unique: true })
@@ -39,5 +49,4 @@ export class Contact {
       this.id = uuidv4();
     }
   }
-
 }

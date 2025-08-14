@@ -8,7 +8,6 @@ export class CreateContactDto {
 
   @IsString()
   @IsNotEmpty()
-  // Anda bisa menggunakan dekorator yang lebih spesifik seperti @IsPhoneNumber
   phone: string;
 
   @IsEmail()

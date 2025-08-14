@@ -1,3 +1,4 @@
+import {Exclude, Expose} from 'class-transformer'
 import {
   Column,
   Entity,
@@ -21,6 +22,7 @@ export class UuidTransformer implements ValueTransformer {
 }
 
 @Entity('contacts')
+@Exclude()
 export class Contact {
   @PrimaryColumn('binary', {
     length: 16,
@@ -29,12 +31,15 @@ export class Contact {
   id: string;
 
   @Column()
+  @Expose()
   name: string;
 
   @Column({ unique: true })
+  @Expose()
   phone: string;
 
   @Column({ unique: true })
+  @Expose()
   email: string;
 
   @CreateDateColumn({ name: 'created_at' })

@@ -1,10 +1,14 @@
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContactsService } from './contacts.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Contact } from './entities/contact.entity';
+import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
-import { NotFoundException, ConflictException } from '@nestjs/common';
 
 const mockContact: Contact = {
   id: 'a7a1f8e2-c2e2-4e2a-8f5c-2f3b9a7b1b2c',
@@ -86,6 +90,85 @@ describe('ContactsService', () => {
       mockContactsRepository.find.mockResolvedValue([mockContact]);
       await expect(service.findAll()).resolves.toEqual([mockContact]);
       expect(mockContactsRepository.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('findAllPaginated', () => {
+    const limit = 5;
+    const generateContacts = (length: number, offset = 0) =>
+      Array.from({ length }, (_, i) => ({
+        ...mockContact,
+        id: `uuid-${i + offset}`,
+        createdAt: new Date(
+          `2025-08-15T12:00:${(i + offset).toString().padStart(2, '0')}Z`,
+        ),
+      }));
+
+    it('should return the first page with a next cursor', async () => {
+      const contacts = generateContacts(limit + 1);
+      mockContactsRepository.find.mockResolvedValue(contacts);
+
+      const result = await service.findAllPaginated({ limit });
+
+      expect(result.data.length).toBe(limit);
+      expect(result.nextCursor).not.toBeNull();
+      expect(result.prevCursor).toBeNull();
+      expect(result.data[0].id).toBe('uuid-0');
+    });
+
+    it('should return the next page with next and prev cursors', async () => {
+      const contacts = generateContacts(limit + 1, 5);
+      mockContactsRepository.find.mockResolvedValue(contacts);
+      const nextCursor = Buffer.from(
+        `2025-08-15T12:00:04Z_uuid-4`,
+      ).toString('base64');
+
+      const result = await service.findAllPaginated({ limit, nextCursor });
+
+      expect(result.data.length).toBe(limit);
+      expect(result.nextCursor).not.toBeNull();
+      expect(result.prevCursor).not.toBeNull();
+      expect(result.data[0].id).toBe('uuid-5');
+    });
+
+    it('should return the last page with a prev cursor', async () => {
+      const contacts = generateContacts(3, 10);
+      mockContactsRepository.find.mockResolvedValue(contacts);
+      const nextCursor = Buffer.from(
+        `2025-08-15T12:00:09Z_uuid-9`,
+      ).toString('base64');
+
+      const result = await service.findAllPaginated({ limit, nextCursor });
+
+      expect(result.data.length).toBe(3);
+      expect(result.nextCursor).toBeNull();
+      expect(result.prevCursor).not.toBeNull();
+      expect(result.data[0].id).toBe('uuid-10');
+    });
+
+    it('should return the previous page with next and prev cursors', async () => {
+      const contacts = generateContacts(limit + 1, 4).reverse();
+      mockContactsRepository.find.mockResolvedValue(contacts);
+      const prevCursor = Buffer.from(
+        `2025-08-15T12:00:10Z_uuid-10`,
+      ).toString('base64');
+
+      const result = await service.findAllPaginated({ limit, prevCursor });
+
+      expect(result.data.length).toBe(limit);
+      expect(result.nextCursor).not.toBeNull();
+      expect(result.prevCursor).not.toBeNull();
+      expect(result.data[0].id).toBe('uuid-5');
+      expect(result.data[4].id).toBe('uuid-9');
+    });
+
+    it('should throw BadRequestException if both cursors are provided', async () => {
+      await expect(
+        service.findAllPaginated({
+          nextCursor: 'abc',
+          prevCursor: 'def',
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

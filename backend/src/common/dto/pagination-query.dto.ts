@@ -7,6 +7,14 @@ export class PaginationQueryDto {
   cursor?: string;
 
   @IsOptional()
+  @IsString()
+  nextCursor?: string;
+
+  @IsOptional()
+  @IsString()
+  prevCursor?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)

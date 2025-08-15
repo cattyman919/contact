@@ -26,16 +26,13 @@ export class TransformInterceptor<T>
     return next.handle().pipe(
       map((data) => {
         // If the request is paginated, add cursor
-        if (
-          data &&
-          Array.isArray(data.data) &&
-          typeof data.nextCursor !== 'undefined'
-        ) {
+        if (data && Array.isArray(data.data)) {
+          const { data: responseData, ...paginationData } = data;
           return {
             status: 'Success',
             statusCode: statusCode,
-            nextCursor: data.nextCursor,
-            data: data.data,
+            ...paginationData,
+            data: responseData,
           };
         }
 

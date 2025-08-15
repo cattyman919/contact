@@ -1,14 +1,15 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, MoreThan, Repository } from 'typeorm';
+import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { Contact } from './entities/contact.entity';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @Injectable()
 export class ContactsService {
@@ -49,42 +50,95 @@ export class ContactsService {
 
   async findAllPaginated(
     paginationQuery: PaginationQueryDto,
-  ): Promise<{ data: Contact[]; nextCursor: string | null }> {
-    const { cursor, limit = 10 } = paginationQuery;
+  ): Promise<{
+    data: Contact[];
+    nextCursor: string | null;
+    prevCursor: string | null;
+  }> {
+    const { cursor, nextCursor, prevCursor, limit = 10 } = paginationQuery;
+    const finalNextCursor = nextCursor || cursor;
+
+    if (finalNextCursor && prevCursor) {
+      throw new BadRequestException(
+        'Both nextCursor and prevCursor cannot be provided simultaneously.',
+      );
+    }
+
+    const take = limit + 1;
+    const isDescending = !!prevCursor;
+
     const queryOptions = {
-      take: limit,
-      order: { createdAt: 'ASC' as const, id: 'ASC' as const },
+      take,
+      order: {
+        createdAt: isDescending ? ('DESC' as const) : ('ASC' as const),
+        id: isDescending ? ('DESC' as const) : ('ASC' as const),
+      },
       where: {} as FindOptionsWhere<Contact> | FindOptionsWhere<Contact>[],
     };
 
-    if (cursor && cursor.length !== 0) {
-      const [cursorCreatedAt, cursorId] = Buffer.from(cursor, 'base64')
+    const cursorToUse = prevCursor || finalNextCursor;
+    if (cursorToUse) {
+      const [cursorCreatedAt, cursorId] = Buffer.from(cursorToUse, 'base64')
         .toString('ascii')
         .split('_');
       const parsedCreatedAt = new Date(cursorCreatedAt);
+      const operator = isDescending ? LessThan : MoreThan;
 
       queryOptions.where = [
         {
-          createdAt: MoreThan(parsedCreatedAt),
+          createdAt: operator(parsedCreatedAt),
         },
         {
           createdAt: parsedCreatedAt,
-          id: MoreThan(cursorId),
+          id: operator(cursorId),
         },
       ];
     }
 
-    const contacts = await this.contactsRepository.find(queryOptions);
+    let contacts = await this.contactsRepository.find(queryOptions);
 
-    let nextCursor: string | null = null;
-    if (contacts.length === limit) {
-      const lastContact = contacts[contacts.length - 1];
-      nextCursor = Buffer.from(
-        `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
-      ).toString('base64');
+    const hasMore = contacts.length > limit;
+    if (hasMore) {
+      contacts.pop();
     }
 
-    return { data: contacts, nextCursor };
+    if (isDescending) {
+      contacts.reverse();
+    }
+
+    const firstContact = contacts[0];
+    const lastContact = contacts[contacts.length - 1];
+
+    let newNextCursor: string | null = null;
+    let newPrevCursor: string | null = null;
+
+    if (isDescending) {
+      newNextCursor = Buffer.from(
+        `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
+      ).toString('base64');
+      if (hasMore) {
+        newPrevCursor = Buffer.from(
+          `${firstContact.createdAt.toISOString()}_${firstContact.id}`,
+        ).toString('base64');
+      }
+    } else {
+      if (hasMore) {
+        newNextCursor = Buffer.from(
+          `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
+        ).toString('base64');
+      }
+      if (finalNextCursor) {
+        newPrevCursor = Buffer.from(
+          `${firstContact.createdAt.toISOString()}_${firstContact.id}`,
+        ).toString('base64');
+      }
+    }
+
+    return {
+      data: contacts,
+      nextCursor: newNextCursor,
+      prevCursor: newPrevCursor,
+    };
   }
 
   async findOne(id: string): Promise<Contact> {

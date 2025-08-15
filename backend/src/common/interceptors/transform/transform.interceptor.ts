@@ -24,11 +24,27 @@ export class TransformInterceptor<T>
     const statusCode = context.switchToHttp().getResponse().statusCode;
 
     return next.handle().pipe(
-      map((data) => ({
-        status: 'Success',
-        statusCode: statusCode,
-        data: data,
-      })),
+      map((data) => {
+        // If the request is paginated, add cursor
+        if (
+          data &&
+          Array.isArray(data.data) &&
+          typeof data.nextCursor !== 'undefined'
+        ) {
+          return {
+            status: 'Success',
+            statusCode: statusCode,
+            nextCursor: data.nextCursor,
+            data: data.data,
+          };
+        }
+
+        return {
+          status: 'Success',
+          statusCode: statusCode,
+          data: data,
+        };
+      }),
     );
   }
 }

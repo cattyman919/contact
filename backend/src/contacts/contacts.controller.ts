@@ -10,12 +10,14 @@ import {
   HttpCode,
   HttpStatus,
   SerializeOptions,
+  Query,
   // UseInterceptors,
   // ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @Controller('contacts')
 // @UseInterceptors(ClassSerializerInterceptor)
@@ -25,6 +27,11 @@ export class ContactsController {
   @Get()
   findAll() {
     return this.contactsService.findAll();
+  }
+
+  @Get('paginated')
+  findAllPaginated(@Query() paginationQuery: PaginationQueryDto) {
+    return this.contactsService.findAllPaginated(paginationQuery);
   }
 
   @Get('dev/all')

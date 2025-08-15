@@ -4,10 +4,11 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, MoreThan, Repository } from 'typeorm';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { Contact } from './entities/contact.entity';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @Injectable()
 export class ContactsService {
@@ -30,6 +31,46 @@ export class ContactsService {
 
   findAll(): Promise<Contact[]> {
     return this.contactsRepository.find();
+  }
+
+  async findAllPaginated(
+    paginationQuery: PaginationQueryDto,
+  ): Promise<{ data: Contact[]; nextCursor: string | null }> {
+    const { cursor, limit = 10 } = paginationQuery;
+    const queryOptions = {
+      take: limit,
+      order: { createdAt: 'ASC' as const, id: 'ASC' as const },
+      where: {} as FindOptionsWhere<Contact> | FindOptionsWhere<Contact>[],
+    };
+
+    if (cursor) {
+      const [cursorCreatedAt, cursorId] = Buffer.from(cursor, 'base64')
+        .toString('ascii')
+        .split('_');
+      const parsedCreatedAt = new Date(cursorCreatedAt);
+
+      queryOptions.where = [
+        {
+          createdAt: MoreThan(parsedCreatedAt),
+        },
+        {
+          createdAt: parsedCreatedAt,
+          id: MoreThan(cursorId),
+        },
+      ];
+    }
+
+    const contacts = await this.contactsRepository.find(queryOptions);
+
+    let nextCursor: string | null = null;
+    if (contacts.length === limit) {
+      const lastContact = contacts[contacts.length - 1];
+      nextCursor = Buffer.from(
+        `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
+      ).toString('base64');
+    }
+
+    return { data: contacts, nextCursor };
   }
 
   async findOne(id: string): Promise<Contact> {

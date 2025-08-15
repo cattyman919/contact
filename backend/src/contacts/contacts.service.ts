@@ -125,21 +125,23 @@ export class ContactsService {
     let newPrevCursor: string | null = null;
 
     if (isDescending) {
-      newNextCursor = Buffer.from(
-        `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
-      ).toString('base64');
-      if (hasMore) {
+      if (lastContact) {
+        newNextCursor = Buffer.from(
+          `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
+        ).toString('base64');
+      }
+      if (hasMore && firstContact) {
         newPrevCursor = Buffer.from(
           `${firstContact.createdAt.toISOString()}_${firstContact.id}`,
         ).toString('base64');
       }
     } else {
-      if (hasMore) {
+      if (hasMore && lastContact) {
         newNextCursor = Buffer.from(
           `${lastContact.createdAt.toISOString()}_${lastContact.id}`,
         ).toString('base64');
       }
-      if (finalNextCursor) {
+      if (finalNextCursor && firstContact) {
         newPrevCursor = Buffer.from(
           `${firstContact.createdAt.toISOString()}_${firstContact.id}`,
         ).toString('base64');

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ContactsModule } from './contacts/contacts.module';
 import { HealthModule } from './health/health.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {Contact} from './contacts/entities/contact.entity'
+import { Contact } from './contacts/entities/contact.entity';
 
 @Module({
   imports: [
@@ -10,14 +10,16 @@ import {Contact} from './contacts/entities/contact.entity'
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: 'root',
-      password: 'root',
+      username: 'user',
+      password: 'password',
       database: 'contact',
       autoLoadEntities: true,
       entities: [Contact],
-      retryAttempts: 5,
-      synchronize: false,
+      retryAttempts: 10,
+      synchronize: true,
     }),
-    ContactsModule, HealthModule],
+    ContactsModule,
+    HealthModule,
+  ],
 })
 export class AppModule {}

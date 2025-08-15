@@ -1,6 +1,6 @@
 # Aplikasi Kontak
 
-![Home Page](./assets/Home Page.png)
+![Home Page](./assets/home_page.png)
 
 Aplikasi ini adalah contoh sederhana untuk mengelola daftar kontak. Backend dibangun menggunakan NestJS dan frontend dibangun menggunakan Angular.
 

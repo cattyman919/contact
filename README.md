@@ -29,6 +29,8 @@ Pastikan Anda telah menginstal prasyarat berikut:
 
 Berikut adalah langkah-langkah untuk menjalankan keseluruhan aplikasi:
 
+> **Peringatan:** Pastikan Anda menjalankan database **sebelum** menjalankan backend. Jika backend dimulai lebih dulu, akan terjadi error karena TypeORM belum siap untuk membuat skema tabel di database, yang menyebabkan aplikasi gagal terhubung.
+
 ### 1. Database
 
 Aplikasi ini menggunakan database MySQL 8.0 yang dijalankan melalui Docker. Semua konfigurasi dan manajemen container diatur melalui `makefile` dan `docker-compose.yml` yang ada di dalam folder `database`.
@@ -95,7 +97,7 @@ Aplikasi ini menggunakan database MySQL 8.0 yang dijalankan melalui Docker. Semu
     ```bash
     pnpm start
     ```
-     Aplikasi akan berjalan di `http://localhost:4200`.
+    Aplikasi akan berjalan di `http://localhost:4200`.
 
 ### 4. Inisialisasi Data (Seeding)
 
@@ -137,4 +139,3 @@ Berikut adalah daftar endpoint yang tersedia di backend. Semua endpoint memiliki
     ```bash
     pnpm test
     ```
-

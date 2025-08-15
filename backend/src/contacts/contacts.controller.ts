@@ -48,6 +48,12 @@ export class ContactsController {
     return this.contactsService.create(createContactDto);
   }
 
+  @Post('bulk')
+  @HttpCode(HttpStatus.CREATED)
+  createBulk(@Body() createContactDtos: CreateContactDto[]) {
+    return this.contactsService.createBulk(createContactDtos);
+  }
+
   @Get(':uuid')
   findOne(@Param('uuid', ParseUUIDPipe) id: string) {
     return this.contactsService.findOne(id);

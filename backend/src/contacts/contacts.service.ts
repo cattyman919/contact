@@ -29,6 +29,20 @@ export class ContactsService {
     }
   }
 
+  async createBulk(createContactDtos: CreateContactDto[]): Promise<Contact[]> {
+    const contacts = this.contactsRepository.create(createContactDtos);
+    try {
+      return await this.contactsRepository.save(contacts);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException(
+          'One or more phone numbers or emails already exist.',
+        );
+      }
+      throw error;
+    }
+  }
+
   findAll(): Promise<Contact[]> {
     return this.contactsRepository.find();
   }
@@ -43,7 +57,7 @@ export class ContactsService {
       where: {} as FindOptionsWhere<Contact> | FindOptionsWhere<Contact>[],
     };
 
-    if (cursor) {
+    if (cursor && cursor.length !== 0) {
       const [cursorCreatedAt, cursorId] = Buffer.from(cursor, 'base64')
         .toString('ascii')
         .split('_');

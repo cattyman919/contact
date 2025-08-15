@@ -1,8 +1,8 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsPhoneNumber,
   IsString,
+  Matches,
   MinLength,
 } from 'class-validator';
 
@@ -13,8 +13,8 @@ export class CreateContactDto {
   name: string;
 
   @IsString()
-  @IsPhoneNumber('ID', {
-    message: 'Format should be a valid Indonesian phone number (081234567890)',
+  @Matches(/^08\d{9,11}$/, {
+    message: 'Phone number must be a valid Indonesian number (e.g., 081234567890)',
   })
   @IsNotEmpty()
   phone: string;

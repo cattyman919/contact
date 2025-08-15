@@ -95,7 +95,19 @@ Aplikasi ini menggunakan database MySQL 8.0 yang dijalankan melalui Docker. Semu
     ```bash
     pnpm start
     ```
-    Aplikasi akan berjalan di `http://localhost:4200`.
+     Aplikasi akan berjalan di `http://localhost:4200`.
+
+### 4. Inisialisasi Data (Seeding)
+
+Untuk mengisi database dengan data awal untuk keperluan pengembangan, Anda dapat menggunakan file `seed-data.json` yang ada di dalam folder `backend`.
+
+Pastikan server backend sudah berjalan, kemudian jalankan perintah berikut dari **root direktori proyek** untuk mengirim data ke endpoint `/contacts/bulk`:
+
+```bash
+curl -X POST -H "Content-Type: application/json" --data "@backend/seed-data.json" http://localhost:3000/api/v1/contacts/bulk
+```
+
+Setelah menjalankan perintah di atas, database Anda akan terisi dengan data kontak awal.
 
 ## Daftar Endpoint API
 
@@ -125,3 +137,4 @@ Berikut adalah daftar endpoint yang tersedia di backend. Semua endpoint memiliki
     ```bash
     pnpm test
     ```
+

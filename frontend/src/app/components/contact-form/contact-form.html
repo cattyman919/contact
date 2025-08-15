@@ -21,7 +21,12 @@
           />
           @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched){
           <div class="text-red-500 text-sm mt-1">
-            Name is required.
+              @if (contactForm.get('name')?.errors?.['required']) {
+                  <span>Name is required.</span>
+              }
+              @if (contactForm.get('name')?.errors?.['minlength']) {
+                  <span>Minimum Length is 3.</span>
+              }
           </div>
           }
         </div>
@@ -60,7 +65,14 @@
           />
           @if (contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched){
               <div class="text-red-500 text-sm mt-1">
-                Phone is required.
+                  @if (contactForm.get('phone')?.errors?.['required']) {
+                      <span>Phone is required.</span>
+                  }
+
+                  @if (contactForm.get('phone')?.errors?.['pattern']) {
+                      <span>Invalid Indonesian Phone format. (eg. 08129586749)</span>
+                      <p>min: 9-11 numbers</p>
+                  }
               </div>
           }
         </div>

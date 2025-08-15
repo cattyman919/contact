@@ -29,9 +29,9 @@ export class ContactForm implements OnInit {
     private contactService: ContactService,
   ) {
     this.contactForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern('^08\\d{9,11}$')]],
     });
   }
 

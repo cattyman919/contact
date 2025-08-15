@@ -75,7 +75,6 @@
 
 @if (showConfirmation) {
 <app-confirmation-dialog
-  *ngIf="showConfirmation"
   message="Are you sure you want to delete this contact?"
   (confirm)="onConfirmDelete()"
   (cancel)="onCancelDelete()"

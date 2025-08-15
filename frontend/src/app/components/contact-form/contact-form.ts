@@ -3,16 +3,22 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { Contact } from '../../models/contact.model';
 import { ContactService } from '../../services/contact.service';
+import { faEnvelope, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-contact-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './contact-form.html',
 })
 export class ContactForm implements OnInit {
   @Input() contact?: Contact;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<Contact>();
+
+  faPhone = faPhone;
+  faUser = faUser;
+  faEnvelope = faEnvelope;
 
   contactForm: FormGroup;
   loading = false;

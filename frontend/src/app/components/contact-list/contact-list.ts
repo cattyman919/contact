@@ -4,13 +4,22 @@ import { Contact } from '../../models/contact.model';
 import { ContactService } from '../../services/contact.service';
 import { ContactForm } from '../contact-form/contact-form';
 import { ConfirmationDialog } from '../confirmation-dialog/confirmation-dialog';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-contact-list',
-  imports: [CommonModule, ContactForm, ConfirmationDialog],
+  imports: [CommonModule, ContactForm, ConfirmationDialog, FontAwesomeModule],
   templateUrl: './contact-list.html',
 })
 export class ContactList implements OnInit {
+  faEnvelope = faEnvelope;
+  faPhone = faPhone;
+  faUser = faUser;
+  faEdit = faEdit;
+  faTrash = faTrash;
+
   contacts: Contact[] = [];
   showForm = false;
   showConfirmation = false;

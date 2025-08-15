@@ -30,7 +30,7 @@ export class ContactList implements OnInit {
     this.error = null;
     this.contactService.getContacts().subscribe({
       next: (contacts) => {
-        this.contacts = contacts.data;
+        this.contacts = contacts;
         this.loading = false;
       },
       error: (err) => {

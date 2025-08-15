@@ -20,18 +20,19 @@ export class ContactForm implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private contactService: ContactService
+    private contactService: ContactService,
   ) {
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required]
+      phone: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     if (this.contact) {
       this.contactForm.patchValue(this.contact);
+      console.log('Updating contact:', this.contact.id);
     }
   }
 
@@ -46,11 +47,11 @@ export class ContactForm implements OnInit {
             this.save.emit(updatedContact);
             this.loading = false;
           },
-          error: (err) => {
-            this.error = 'Failed to update contact.';
+          error: (err: Error) => {
+            this.error = err.message;
             this.loading = false;
             console.error(err);
-          }
+          },
         });
       } else {
         this.contactService.createContact(formValue).subscribe({
@@ -58,11 +59,11 @@ export class ContactForm implements OnInit {
             this.save.emit(newContact);
             this.loading = false;
           },
-          error: (err) => {
-            this.error = 'Failed to create contact.';
+          error: (err: Error) => {
+            this.error = err.message;
             this.loading = false;
             console.error(err);
-          }
+          },
         });
       }
     }

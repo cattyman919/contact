@@ -28,7 +28,8 @@ export class Contact {
     length: 16,
     transformer: new UuidTransformer(),
   })
-  @Expose({ groups: ['dev'] })
+  // @Expose({ groups: ['dev'] })
+  @Expose()
   id: string;
 
   @Column()

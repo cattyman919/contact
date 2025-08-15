@@ -2,9 +2,11 @@
   <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
     <h2 class="text-2xl font-bold mb-4 text-white">{{ contact ? 'Edit' : 'Add' }} Contact</h2>
     <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-      <div *ngIf="error" class="bg-red-500 text-white p-4 rounded mb-4">
+    @if (error){
+      <div class="bg-red-500 text-white p-4 rounded mb-4">
         {{ error }}
       </div>
+    }
       <fieldset [disabled]="loading">
         <div class="mb-4">
           <label for="name" class="block text-sm font-medium text-gray-300">Name</label>
@@ -14,9 +16,11 @@
             formControlName="name"
             class="mt-1 block w-full bg-gray-700 py-1 px-1 border-gray-600 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white"
           />
-          <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="text-red-500 text-sm mt-1">
+          @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched){
+          <div class="text-red-500 text-sm mt-1">
             Name is required.
           </div>
+          }
         </div>
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
@@ -26,10 +30,16 @@
             formControlName="email"
             class="mt-1 block w-full bg-gray-700 border-gray-600 py-1 px-1 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white"
           />
-          <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
-            <span *ngIf="contactForm.get('email')?.errors?.['required']">Email is required.</span>
-            <span *ngIf="contactForm.get('email')?.errors?.['email']">Invalid email format.</span>
+          @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched){
+          <div class="text-red-500 text-sm mt-1">
+              @if (contactForm.get('email')?.errors?.['required']) {
+                  <span>Email is required.</span>
+              }
+              @if (contactForm.get('email')?.errors?.['email']) {
+                  <span>Invalid email format.</span>
+              }
           </div>
+          }
         </div>
         <div class="mb-4">
           <label for="phone" class="block text-sm font-medium text-gray-300">Phone</label>
@@ -39,16 +49,20 @@
             formControlName="phone"
             class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-sm py-1 px-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white"
           />
-          <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="text-red-500 text-sm mt-1">
-            Phone is required.
-          </div>
+          @if (contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched){
+              <div class="text-red-500 text-sm mt-1">
+                Phone is required.
+              </div>
+          }
         </div>
         <div class="flex justify-end">
           <button type="button" (click)="close.emit()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">
             Cancel
           </button>
           <button type="submit" [disabled]="contactForm.invalid || loading" class="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center">
-            <span *ngIf="loading" class="spinner border-2 border-t-2 border-gray-200 border-t-blue-500 rounded-full w-5 h-5 animate-spin mr-2"></span>
+            @if (loading) {
+              <span class="spinner border-2 border-t-2 border-gray-200 border-t-blue-500 rounded-full w-5 h-5 animate-spin mr-2"></span>
+            }
             Save
           </button>
         </div>

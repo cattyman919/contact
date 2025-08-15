@@ -4,3 +4,9 @@ export interface Contact {
   email: string;
   phone: string;
 }
+
+export interface PaginatedContactsResponse {
+  data: Contact[];
+  nextCursor: string | null;
+  prevCursor: string | null;
+}

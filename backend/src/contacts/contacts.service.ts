@@ -48,6 +48,10 @@ export class ContactsService {
     return this.contactsRepository.find();
   }
 
+  getCount(): Promise<number> {
+    return this.contactsRepository.count();
+  }
+
   async findAllPaginated(
     paginationQuery: PaginationQueryDto,
   ): Promise<{

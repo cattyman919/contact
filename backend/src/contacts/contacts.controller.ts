@@ -34,6 +34,11 @@ export class ContactsController {
     return this.contactsService.findAllPaginated(paginationQuery);
   }
 
+  @Get('count')
+  getCount() {
+    return this.contactsService.getCount();
+  }
+
   @Get('dev/all')
   @SerializeOptions({
     groups: ['dev'],

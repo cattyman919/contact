@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ILike } from 'typeorm';
 import { Contact } from './entities/contact.entity';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -86,10 +87,16 @@ describe('ContactsService', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of contacts', async () => {
+    it('should return a filtered array of contacts when a query is provided', async () => {
+      const query = 'John';
       mockContactsRepository.find.mockResolvedValue([mockContact]);
-      await expect(service.findAll()).resolves.toEqual([mockContact]);
-      expect(mockContactsRepository.find).toHaveBeenCalled();
+      await expect(service.findAll(query)).resolves.toEqual([mockContact]);
+      expect(mockContactsRepository.find).toHaveBeenCalledWith({
+        where: [
+          { name: ILike(`%${query}%`) },
+          { phone: ILike(`%${query}%`) },
+        ],
+      });
     });
   });
 

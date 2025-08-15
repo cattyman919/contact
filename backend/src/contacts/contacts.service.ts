@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, LessThan, MoreThan, Repository } from 'typeorm';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -44,7 +44,15 @@ export class ContactsService {
     }
   }
 
-  findAll(): Promise<Contact[]> {
+  findAll(query?: string): Promise<Contact[]> {
+    if (query) {
+      return this.contactsRepository.find({
+        where: [
+          { name: ILike(`%${query}%`) },
+          { phone: ILike(`%${query}%`) },
+        ],
+      });
+    }
     return this.contactsRepository.find();
   }
 

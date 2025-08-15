@@ -50,6 +50,12 @@ describe('ContactsController', () => {
     expect(mockContactsService.findAll).toHaveBeenCalled();
   });
 
+  it('should get a filtered array of contacts when a query is provided', async () => {
+    const query = 'John';
+    await expect(controller.findAll(query)).resolves.toEqual([mockContact]);
+    expect(mockContactsService.findAll).toHaveBeenCalledWith(query);
+  });
+
   it('should get a single contact', async () => {
     await expect(controller.findOne(mockContact.id)).resolves.toEqual(
       mockContact,

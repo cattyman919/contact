@@ -23,6 +23,7 @@ export class ContactList implements OnInit {
   faTrash = faTrash;
 
   contacts: Contact[] = [];
+  allContacts: Contact[] = [];
   showForm = false;
   showConfirmation = false;
   selectedContact?: Contact;
@@ -36,7 +37,8 @@ export class ContactList implements OnInit {
   limit = 10;
   totalPages = 0;
   pages: number[] = [];
-  cursorMap = new Map<number, string | null>();
+
+  searchQuery = '';
 
   constructor(private contactService: ContactService) {}
 
@@ -44,43 +46,21 @@ export class ContactList implements OnInit {
     this.loadInitialData();
   }
 
+  onSearch(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchQuery = target.value;
+    this.loadInitialData();
+  }
+
   loadInitialData(): void {
     this.loading = true;
-    this.contactService.getContactsCount().subscribe({
-      next: (count) => {
-        this.totalContacts = count;
+    this.contactService.getContacts(this.searchQuery).subscribe({
+      next: (contacts) => {
+        this.allContacts = contacts;
+        this.totalContacts = contacts.length;
         this.totalPages = Math.ceil(this.totalContacts / this.limit);
         this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
         this.loadPage(1);
-      },
-      error: (err) => {
-        this.error = 'Failed to load total contacts.';
-        this.loading = false;
-        console.error(err);
-      },
-    });
-  }
-
-  loadPage(page: number): void {
-    if (page < 1 || page > this.totalPages) {
-      return;
-    }
-
-    this.loading = true;
-    this.error = null;
-    this.currentPage = page;
-
-    const cursor = this.cursorMap.get(page - 1) || null;
-    const direction = page === 1 ? 'next' : 'next'; // Always 'next' when jumping to a page
-
-    this.contactService.getContactsPaginated(cursor, direction, this.limit).subscribe({
-      next: (response) => {
-        this.contacts = response.data;
-        this.cursorMap.set(this.currentPage, response.nextCursor);
-        // Prefill the prev cursor for the next page
-        if (response.nextCursor) {
-          this.cursorMap.set(this.currentPage + 1, response.nextCursor);
-        }
         this.loading = false;
       },
       error: (err) => {
@@ -89,6 +69,17 @@ export class ContactList implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  loadPage(page: number): void {
+    if (page < 1 || (page > this.totalPages && this.totalPages > 0)) {
+      return;
+    }
+
+    this.currentPage = page;
+    const start = (page - 1) * this.limit;
+    const end = start + this.limit;
+    this.contacts = this.allContacts.slice(start, end);
   }
 
   goToNextPage(): void {

@@ -33,8 +33,12 @@ export class ContactService {
     return throwError(() => new Error(errorMessage));
   }
 
-  getContacts(): Observable<Contact[]> {
-    return this.http.get<ApiResponse<Contact[]>>(this.apiUrl).pipe(
+  getContacts(query?: string): Observable<Contact[]> {
+    let params = new HttpParams();
+    if (query) {
+      params = params.set('query', query);
+    }
+    return this.http.get<ApiResponse<Contact[]>>(this.apiUrl, { params }).pipe(
       map((response) => response.data || []),
       catchError(this.handleError),
     );

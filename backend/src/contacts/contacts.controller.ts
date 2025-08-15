@@ -25,8 +25,8 @@ export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
 
   @Get()
-  findAll() {
-    return this.contactsService.findAll();
+  findAll(@Query('query') query: string) {
+    return this.contactsService.findAll(query);
   }
 
   @Get('paginated')

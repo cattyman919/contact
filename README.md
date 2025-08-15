@@ -24,7 +24,7 @@ Pastikan Anda telah menginstal prasyarat berikut:
 
 - Node.js (v18 atau lebih baru)
 - pnpm
-- Docker & Docker Compose
+- Docker & Docker Compose V2
 - make
 
 Berikut adalah langkah-langkah untuk menjalankan keseluruhan aplikasi:
@@ -34,6 +34,9 @@ Berikut adalah langkah-langkah untuk menjalankan keseluruhan aplikasi:
 ### 1. Database
 
 Aplikasi ini menggunakan database MySQL 8.0 yang dijalankan melalui Docker. Semua konfigurasi dan manajemen container diatur melalui `makefile` dan `docker-compose.yml` yang ada di dalam folder `database`.
+
+> **Peringatan:** database menggunakan docker compose v2 (docker compose) dan
+> bukan (docker-compose). jika menggunakan docker-compose, harus ganti commandnya manual pada make filenya.
 
 1.  **Masuk ke direktori database:**
 

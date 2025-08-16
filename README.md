@@ -130,6 +130,45 @@ Berikut adalah daftar endpoint yang tersedia di backend. Semua endpoint memiliki
 | `DELETE`    | `/contacts/:uuid`     | Menghapus kontak berdasarkan ID.                                   |
 | `GET`       | `/health`             | Endpoint untuk memeriksa status kesehatan server.                  |
 
+### Penjelasan Detail Endpoint
+
+#### `POST /contacts`
+
+Endpoint ini digunakan untuk membuat satu kontak baru. Anda harus mengirimkan data kontak dalam format JSON di dalam body permintaan.
+
+**Body Permintaan (JSON):**
+
+```json
+{
+  "name": "John Doe",
+  "phone": "081234567890",
+  "email": "john.doe@example.com"
+}
+```
+
+**Detail Field:**
+
+- `name` (string, wajib): Nama lengkap kontak. Minimal 3 karakter.
+- `phone` (string, wajib): Nomor telepon yang valid di Indonesia (diawali dengan `08` dan terdiri dari 11-13 digit).
+- `email` (string, wajib): Alamat email yang valid.
+
+#### `GET /contacts/paginated`
+
+Endpoint ini mengambil daftar kontak dengan sistem paginasi berbasis kursor untuk membatasi jumlah data yang dikembalikan.
+
+**Parameter Query:**
+
+- `limit` (opsional, angka): Menentukan jumlah maksimum kontak yang akan diambil. Nilai default adalah `10`, dan nilai maksimum adalah `100`.
+- `nextCursor` (opsional, string): ID dari kontak terakhir yang Anda lihat. Server akan mengembalikan data _setelah_ kontak dengan ID ini. Jika dikosongkan, data akan diambil dari awal.
+- `prevCursor` (opsional, string): ID dari kontak sebelumnya yang Anda pernah lihat. Server akan mengembalikan data _sebelum_ kontak dengan ID ini.
+
+**Contoh Penggunaan:**
+
+- Mengambil 15 kontak pertama:
+  `/api/v1/contacts/paginated?limit=15`
+- Mengambil 15 kontak berikutnya setelah kontak dengan ID `<cursor_id>`:
+  `/api/v1/contacts/paginated?limit=15&cursor=<cursor_id>`
+
 ## Cara Menjalankan Unit Test
 
 ### Backend
